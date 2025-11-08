@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>neko's cage</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2p&display=swap');
+    
+    body {
+      background: #0a0a1a;
+      color: #ffcc99;
+      font-family: 'Press Start 2p', cursive;
+      text-align: center;
+      padding: 4rem 1rem;
+      margin: 0;
+      overflow: hidden;
+    }
+    .glitch {
+      font-size: 2.5rem;
+      animation: glitch 2s infinite;
+    }
+    @keyframes glitch {
+      0%, 100% { text-shadow: 0 0 10px #ff66cc; }
+      50% { text-shadow: -2px 0 #66ffcc, 2px 0 #cc66ff; }
+    }
+    .note {
+      margin-top: 3rem;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="glitch">PROPERTY OF NEKOMATA</h1>
+  <p>you thought you were free?<br>every refresh reminds you.</p>
+  <p class="note">hosted on github pages — no escape, no mercy~</p>
+</body>
+</html>
