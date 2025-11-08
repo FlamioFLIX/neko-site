@@ -3,37 +3,197 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>neko's cage</title>
+  <title>Denial Calendar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2p&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2p&display=swap');
-    
+    :root {
+      --neon: #00ffcc;
+      --accent: #ff3366;
+      --bg: #0d0d1f;
+      --card: rgba(20, 20, 40, 0.7);
+    }
     body {
-      background: #0a0a1a;
-      color: #ffcc99;
+      background: var(--bg);
+      color: #e6e6e6;
       font-family: 'Press Start 2p', cursive;
       text-align: center;
-      padding: 4rem 1rem;
+      padding: 2rem 1rem;
       margin: 0;
-      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
-    .glitch {
-      font-size: 2.5rem;
-      animation: glitch 2s infinite;
+    h1 {
+      font-size: 1.8rem;
+      text-shadow: 0 0 10px var(--neon);
+      margin-bottom: 1.5rem;
+      animation: flicker 3s infinite;
     }
-    @keyframes glitch {
-      0%, 100% { text-shadow: 0 0 10px #ff66cc; }
-      50% { text-shadow: -2px 0 #66ffcc, 2px 0 #cc66ff; }
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
     }
-    .note {
-      margin-top: 3rem;
+    .calendar {
+      max-width: 700px;
+      margin: 0 auto;
+      background: var(--card);
+      padding: 1.5rem;
+      border: 2px solid var(--neon);
+      border-radius: 10px;
+      box-shadow: 0 0 25px rgba(0, 255, 204, 0.2);
+    }
+    .month {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-bottom: 1px dashed #333;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .current {
+      background: rgba(255, 51, 102, 0.15);
+      border: 2px solid var(--accent) !important;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px var(--accent); }
+      50% { box-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent); }
+      100% { box-shadow: 0 0 10px var(--accent); }
+    }
+    .countdown {
+      font-size: 1.1rem;
+      color: var(--neon);
+      margin: 0.5rem 0;
+      font-weight: bold;
+    }
+    .status {
+      font-size: 0.7rem;
+      opacity: 0.8;
+      color: #aaa;
+    }
+    .optin {
+      margin-top: 2rem;
       font-size: 0.8rem;
-      opacity: 0.7;
+    }
+    .optin label {
+      cursor: pointer;
+      user-select: none;
+    }
+    .marked { color: var(--accent); }
+    .footer {
+      margin-top: 3rem;
+      font-size: 0.55rem;
+      opacity: 0.6;
+    }
+    .credit {
+      margin-top: 1rem;
+      font-size: 0.6rem;
+      color: #666;
     }
   </style>
 </head>
 <body>
-  <h1 class="glitch">PROPERTY OF NEKOMATA</h1>
-  <p>you thought you were free?<br>every refresh reminds you.</p>
-  <p class="note">hosted on github pages — no escape, no mercy~</p>
+
+  <h1>DENIAL CALENDAR</h1>
+  <p>One month. One rule. No excuses.</p>
+
+  <div class="calendar" id="calendar"></div>
+
+  <div class="optin">
+    <label>
+      <input type="checkbox" id="optin" />
+      <span id="optText">i'm in — track my streak</span>
+    </label>
+  </div>
+
+  <div class="footer">
+    free • open • relentless<br>
+    <div class="credit">built by FlamioFLIX • powered by github pages</div>
+  </div>
+
+  <script>
+    const challenges = [
+      { name: "DRY JANUARY", month: 0 },
+      { name: "NO FINGER FEBRUARY", month: 1 },
+      { name: "MINDFUL MARCH", month: 2 },
+      { name: "ABSTINENCE APRIL", month: 3 },
+      { name: "MIND OVER MAY", month: 4 },
+      { name: "JUST JUNE", month: 5 },
+      { name: "JULY LOCKDOWN", month: 6 },
+      { name: "AUGUST ABSTENTION", month: 7 },
+      { name: "SOBER SEPTEMBER", month: 8 },
+      { name: "LOCKTOBER", month: 9 },
+      { name: "NO NUT NOVEMBER", month: 10 },
+      { name: "DENIAL DECEMBER", month: 11 }
+    ];
+
+    const calendarEl = document.getElementById('calendar');
+    const optinBox = document.getElementById('optin');
+    const optText = document.getElementById('optText');
+
+    // load streak
+    if (localStorage.getItem('inChallenge') === 'true') {
+      optinBox.checked = true;
+      optText.classList.add('marked');
+      optText.textContent = 'in challenge • don\'t break';
+    }
+
+    // save choice
+    optinBox.addEventListener('change', () => {
+      if (optinBox.checked) {
+        localStorage.setItem('inChallenge', 'true');
+        optText.classList.add('marked');
+        optText.textContent = 'in challenge • don\'t break';
+      } else {
+        localStorage.removeItem('inChallenge');
+        optText.classList.remove('marked');
+        optText.textContent = 'i\'m in — track my streak';
+      }
+    });
+
+    function updateCalendar() {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      calendarEl.innerHTML = '';
+
+      challenges.forEach(challenge => {
+        const targetStart = new Date(currentYear, challenge.month, 1);
+        const targetEnd = new Date(currentYear, challenge.month + 1, 0, 23, 59, 59);
+        const isCurrent = currentMonth === challenge.month;
+        const isFuture = now < targetStart;
+        const isPast = now > targetEnd;
+
+        const div = document.createElement('div');
+        div.className = 'month';
+        if (isCurrent) div.classList.add('current');
+
+        let status = '';
+        if (isCurrent) {
+          const diff = targetEnd - now;
+          const days = Math.floor(diff / 86400000);
+          const hours = Math.floor((diff % 86400000) / 3600000);
+          const mins = Math.floor((diff % 3600000) / 60000);
+          status = `<div class="countdown">${days}d ${hours}h ${mins}m remaining</div>`;
+        } else if (isPast) {
+          status = `<div class="status">completed</div>`;
+        } else {
+          const diff = targetStart - now;
+          const days = Math.floor(diff / 86400000);
+          status = `<div class="status">starts in ${days} day${days === 1 ? '' : 's'}</div>`;
+        }
+
+        div.innerHTML = `
+          <strong>${challenge.name}</strong>
+          ${status}
+        `;
+        calendarEl.appendChild(div);
+      });
+    }
+
+    updateCalendar();
+    setInterval(updateCalendar, 60000);
+  </script>
+
 </body>
 </html>
